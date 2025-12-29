@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="mon modal.css"/>
+</head>
+<body>
+
+    <button onclick="ouvrirModal('🔔 Notification', 'Nouvelle quête disponible !', [{text: 'OK', action: 'fermerModal()'}])">
+    🔔 Ouvrir Modal Test
+</button>
+
+    <!-- Modal Réutilisable -->
+<div id="modalGuilde" class="modal">
+    <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <div id="modal-header" class="modal-header"></div>
+        <div id="modal-body" class="modal-body"></div>
+        <div id="modal-footer" class="modal-footer"></div>
+    </div>
+</div>
+
+<SCRIPT src="mon modal.js"></SCRIPT>
+</body>
+</html>

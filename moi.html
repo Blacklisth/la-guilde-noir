@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>🗡️ Missions Confidentielles</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            background: linear-gradient(135deg, #0a0a0a, #1a0f0f); 
+            color: #e0e0e0; font-family: 'Courier New', monospace; 
+            min-height: 100vh; padding: 20px;
+        }
+        .header { text-align: center; margin-bottom: 30px; }
+        .header h1 { color: #ff4444; text-shadow: 0 0 15px #ff0000; font-size: 2.5em; }
+        .section { background: rgba(20,10,10,0.9); border: 2px solid #440000; border-radius: 15px; padding: 25px; margin-bottom: 20px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .stat-card { background: rgba(0,0,0,0.6); padding: 20px; border-radius: 10px; text-align: center; border: 1px solid #660000; }
+        .stat-value { font-size: 2.5em; color: #ffd700; font-weight: bold; }
+        .missions { list-style: none; }
+        .mission { display: flex; justify-content: space-between; align-items: center; padding: 15px; margin: 10px 0; background: rgba(0,0,0,0.5); border-radius: 10px; border-left: 5px solid #ff4444; }
+        .mission-terminee { border-left-color: #00ff88; opacity: 0.7; }
+        .prime { color: #ffd700; font-weight: bold; font-size: 1.2em; }
+        button { background: #440000; color: #ff6666; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; margin: 0 5px; }
+        button:hover { background: #660000; box-shadow: 0 0 10px #ff4444; }
+        .back-btn { position: fixed; top: 20px; left: 20px; z-index: 100; }
+    </style>
+</head>
+<body>
+    <button class="back-btn" onclick="window.location.href='lui.html'">🏠 Accueil Public</button>
+
+    <div class="header">
+        <h1 id="pseudoTitre">🗡️ Tableau de Bord</h1>
+        <p id="roleTitre">Chargement...</p>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-value" id="totalOr">0</div>
+            <div>💰 Or Total</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" id="missionsActives">0</div>
+            <div>🎯 Missions Actives</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" id="missionsTerminees">0</div>
+            <div>✅ Missions Réussies</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" id="tauxReussite">0%</div>
+            <div>📊 Taux Réussite</div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>🎯 Mes Missions Confidentielles</h2>
+        <ul id="listeMissions" class="missions"></ul>
+    </div>
+
+    <script>
+        // Récupère pseudo depuis URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const pseudo = urlParams.get('pseudo') || 'Inconnu';
+        document.getElementById('pseudoTitre').textContent = `🗡️ ${pseudo}`;
+        
+        // Charge données
+        let quetes = JSON.parse(localStorage.getItem('quetesAssassins')) || [];
+        let totalOr = parseInt(localStorage.getItem('totalOr')) || 0;
+        let membres = JSON.parse(localStorage.getItem('membresGuilde')) || [];
+        
+        // Trouve rôle du membre
+        const membre = membres.find(m => m.pseudo === pseudo);
+        document.getElementById('roleTitre').textContent = membre ? 
+            `${membre.role === 'assassin' ? '🗡️ Assassin' : '📜 Donneur'} depuis ${membre.dateInscription}` : 
+            '👤 Membre Guilde';
+
+        function afficherMissions() {
+            const liste = document.getElementById('listeMissions');
+            liste.innerHTML = '';
+            let actives = 0, terminees = 0;
+            
+            quetes.forEach((q, i) => {
+                const li = document.createElement('li');
+                li.className = `mission ${q.termine ? 'mission-terminee' : ''}`;
+                li.innerHTML = `
+                    <div>
+                        <strong>${q.cible}</strong><br>
+                        <span class="prime">${q.prime} or</span>
+                    </div>
+                    <div>
+                        <input type="checkbox" ${q.termine ? 'checked' : ''} onchange="terminerMission(${i})">
+                        <button onclick="supprimerMission(${i})">❌</button>
+                    </div>
+                `;
+                liste.appendChild(li);
+                
+                if (q.termine) terminees++; else actives++;
+            });
+            
+            // Met à jour stats
+            document.getElementById('totalOr').textContent = totalOr;
+            document.getElementById('missionsActives').textContent = actives;
+            document.getElementById('missionsTerminees').textContent = terminees;
+            document.getElementById('tauxReussite').textContent = quetes.length > 0 ? 
+                Math.round((terminees / quetes.length) * 100) + '%' : '0%';
+        }
+
+        function terminerMission(i) {
+            if (!quetes[i].termine) totalOr += quetes[i].prime;
+            quetes[i].termine = !quetes[i].termine;
+            localStorage.setItem('quetesAssassins', JSON.stringify(quetes));
+            localStorage.setItem('totalOr', totalOr);
+            afficherMissions();
+        }
+
+        function supprimerMission(i) {
+            quetes.splice(i, 1);
+            localStorage.setItem('quetesAssassins', JSON.stringify(quetes));
+            afficherMissions();
+        }
+
+        // Init
+        afficherMissions();
+    </script>
+</body>
+</html>

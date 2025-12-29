@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>📜 Tableau de Bord Donneur</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            background: linear-gradient(135deg, #0a0a0a, #1a0f0f); 
+            color: #e0e0e0; font-family: 'Courier New', monospace; 
+            min-height: 100vh; padding: 20px;
+        }
+        .header { text-align: center; margin-bottom: 30px; }
+        .header h1 { color: #ff88ff; text-shadow: 0 0 15px #ff44ff; font-size: 2.5em; }
+        .section { background: rgba(20,10,10,0.9); border: 2px solid #440044; border-radius: 15px; padding: 25px; margin-bottom: 20px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .stat-card { background: rgba(0,0,0,0.6); padding: 20px; border-radius: 10px; text-align: center; border: 1px solid #660066; }
+        .stat-value { font-size: 2.5em; color: #ff88ff; font-weight: bold; }
+        .missions { list-style: none; }
+        .mission { display: flex; justify-content: space-between; align-items: center; padding: 15px; margin: 10px 0; background: rgba(0,0,0,0.5); border-radius: 10px; border-left: 5px solid #ff88ff; }
+        .mission-terminee { border-left-color: #00ff88; opacity: 0.7; }
+        .prime { color: #ffd700; font-weight: bold; font-size: 1.2em; }
+        button { background: #440044; color: #ff88ff; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; margin: 0 5px; }
+        button:hover { background: #660066; box-shadow: 0 0 10px #ff88ff; }
+        .back-btn { position: fixed; top: 20px; left: 20px; z-index: 100; background: #440000; color: #ff6666; }
+    </style>
+</head>
+<body>
+    <button class="back-btn" onclick="window.location.href='lui.html'">🏠 Accueil Guilde</button>
+
+    <div class="header">
+        <h1 id="pseudoDonneur">📜 Tableau Donneur</h1>
+        <p id="statsQuetes">Chargement...</p>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-value" id="totalQuetes">0</div>
+            <div>📜 Quêtes Publiées</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" id="quêtesActives">0</div>
+            <div>🎯 En Cours</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" id="quêtesTerminees">0</div>
+            <div>✅ Exécutées</div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>🎯 Mes Quêtes Publiées</h2>
+        <ul id="listeQuetesDonneur" class="missions"></ul>
+    </div>
+
+    <script>
+        // Récupère pseudo depuis URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const pseudo = urlParams.get('pseudo') || 'Donneur';
+        document.getElementById('pseudoDonneur').textContent = `📜 ${pseudo}`;
+
+        // Charge données
+        let quetes = JSON.parse(localStorage.getItem('quetesAssassins')) || [];
+        
+        function afficherQuetesDonneur() {
+            const liste = document.getElementById('listeQuetesDonneur');
+            liste.innerHTML = '';
+            let total = 0, actives = 0, terminees = 0;
+            
+            // FILTRAGE : SEULEMENT quêtes de CE donneur
+            const mesQuetes = quetes.filter(q => q.donateur === pseudo);
+            
+            mesQuetes.forEach((q, i) => {
+                const indexGlobal = quetes.findIndex(quete => quete === q);
+                const li = document.createElement('li');
+                li.className = `mission ${q.termine ? 'mission-terminee' : ''}`;
+                li.innerHTML = `
+                    <div>
+                        <strong>${q.cible}</strong><br>
+                        <span class="prime">${q.prime} or</span> ${q.donateur}
+                    </div>
+                    <div>
+                        <span>${q.termine ? '✅' : '⏳'}</span>
+                        <button onclick="detailQuete(${indexGlobal})">📋</button>
+                    </div>
+                `;
+                liste.appendChild(li);
+                
+                total++;
+                if (q.termine) terminees++; else actives++;
+            });
+            
+            // Stats
+            document.getElementById('totalQuetes').textContent = total;
+            document.getElementById('quêtesActives').textContent = actives;
+            document.getElementById('quêtesTerminees').textContent = terminees;
+            document.getElementById('statsQuetes').textContent = 
+                `Tu as publié ${total} quêtes (${Math.round((terminees/total)*100 || 0)}% exécutées)`;
+        }
+
+        function detailQuete(i) {
+            alert(`Quête "${quetes[i].cible}" : ${quetes[i].termine ? '✅ Exécutée' : '⏳ En attente'}`);
+        }
+
+        afficherQuetesDonneur();
+    </script>
+</body>
+</html>

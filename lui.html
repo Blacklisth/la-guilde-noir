@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Guilde des Ombres - Page d'Accueil</title>
+    <link rel="stylesheet" href="lui.css"/>
+    <link rel="stylesheet" href="mon modal.css"/>
+    
+</head>
+<body>
+    <marquee><p>une fois que vous avez posé vos yeux sur cette page, votre destin ne sera plus le même. Vous venez de poser le pied sur un monde où seul les plus forts gagnent, Ne tardez pas, inscrivez vous pour protéger votre domaine. et nous vous prions de garder ce site secret si vous ne voulez pas votre nom sur la liste noir.......................................................(*.*)..............on vous observe. </p></marquee>
+    <div class="header">
+        <h1>🗡️ Guilde des Ombres 🗡️</h1>
+        <p>  | Eminence in shadow | </p>
+        <a href="inscription.html"><button onclick="ouvrirProfil()" style="margin:10px;">👤Enrégistrement</button></a>
+        <a href="moi"><button id="btnProfil" style="display:none;" onclick="redirigerProfil()">
+        👤 Mon Profil
+        </button></a>
+    </div>
+
+    <div class="section">
+        <h2>📜 Poster une Quête</h2>
+        <input type="text" id="cibleInput" placeholder="Nom de la cible">
+        <input type="number" id="primeInput" placeholder="Prime (or)" min="50">
+        <button onclick="posterQuete()">Publier Mission</button>
+    </div>
+
+    <div class="section">
+        <h2>🎯 Quêtes Actives</h2>
+        <ul id="listeQuetes" class="quêtes"></ul>
+        <div class="stats">
+            <span id="statsActives">Quêtes: 0</span>
+            <span id="statsTerminees">Terminées: 0</span>
+            <span id="totalPrimes">Or: 0</span>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>💰 Primes Recherchées (VIP)</h2>
+        <div id="primesVIP">
+            <div class="quête" onclick="detailPrime(1)"><span>Baron Noir</span><span class="prime">5000 or</span></div>
+            <div class="quête" onclick="detailPrime(2)"><span>Seigneur des Ombres</span><span class="prime">12000 or</span></div>
+            <div class="quête" onclick="detailPrime(3)"><span>Le Traître</span><span class="prime">25000 or</span></div>
+        </div>
+    </div>
+
+     <button onclick="ouvrirModal('🔔 Notification', 'Nouvelle quête disponible !', [{text: 'OK', action: 'fermerModal()'}])">
+    🔔 notification
+    </button>
+      <!-- Modal Réutilisable -->
+<div id="modalGuilde" class="modal">
+    <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <div id="modal-header" class="modal-header"></div>
+        <div id="modal-body" class="modal-body"></div>
+        <div id="modal-footer" class="modal-footer"></div>
+    </div>
+</div>
+
+<SCRIPT src="mon modal.js"></SCRIPT>
+<SCRIPT src="lui.js"></SCRIPT>
+<SCRIPT src="mon profil.js"></SCRIPT>
+</body>
+</html>
+
+

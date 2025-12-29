@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>🗡️ Guilde des Ombres - Inscription</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            background: linear-gradient(135deg, #0a0a0a, #1a0f0f); 
+            color: #e0e0e0; font-family: 'Courier New', monospace; 
+            min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px;
+        }
+        .container { 
+            background: rgba(20,10,10,0.9); border: 2px solid #440000; 
+            border-radius: 15px; padding: 40px; max-width: 400px; width: 100%; 
+            box-shadow: 0 0 30px rgba(255,68,68,0.3);
+        }
+        .header { text-align: center; margin-bottom: 30px; }
+        .header h1 { color: #ff4444; text-shadow: 0 0 15px #ff0000; font-size: 2.2em; margin-bottom: 10px; }
+        .header p { color: #ff6666; font-size: 1.1em; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; color: #ff8888; margin-bottom: 8px; font-weight: bold; }
+        input { width: 100%; padding: 12px; border: 1px solid #440000; border-radius: 8px; 
+                background: #2a1a1a; color: #e0e0e0; font-family: inherit; font-size: 16px;
+                transition: all 0.3s; }
+        input:focus { outline: none; border-color: #ff4444; box-shadow: 0 0 10px rgba(255,68,68,0.5); }
+        input.error { border-color: #ff0000; box-shadow: 0 0 10px rgba(255,0,0,0.3); }
+        .error-msg { color: #ff4444; font-size: 14px; margin-top: 5px; display: none; }
+        .role-select { display: flex; gap: 10px; margin-bottom: 20px; }
+        .role-btn { flex: 1; padding: 12px; border: 1px solid #440000; border-radius: 8px; 
+                    background: #2a1a1a; color: #e0e0e0; cursor: pointer; transition: all 0.3s;
+                    font-family: inherit; font-weight: bold; }
+        .role-btn.active { background: #440000; border-color: #ff6666; color: #ff6666; 
+                          box-shadow: 0 0 15px rgba(255,102,102,0.5); }
+        button { width: 100%; padding: 15px; background: linear-gradient(45deg, #440000, #660000); 
+                 color: #ff6666; border: none; border-radius: 8px; font-size: 18px; font-weight: bold;
+                 cursor: pointer; transition: all 0.3s; font-family: inherit; }
+        button:hover:not(:disabled) { background: linear-gradient(45deg, #660000, #880000); 
+                                     box-shadow: 0 0 20px rgba(255,68,68,0.6); transform: translateY(-2px); }
+        button:disabled { background: #222; color: #666; cursor: not-allowed; }
+        .success { background: rgba(0,100,0,0.9); border: 2px solid #00ff88; color: #00ff88; 
+                   text-align: center; padding: 20px; border-radius: 10px; display: none; }
+        .back-link { text-align: center; margin-top: 20px; }
+        .back-link a { color: #ff6666; text-decoration: none; font-weight: bold; }
+        .back-link a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🗡️ Inscription Guilde</h1>
+            <p>Rejoins les Ombres comme Assassin ou Donneur</p>
+        </div>
+
+        <form id="formInscription">
+            <div class="form-group">
+                <label for="pseudo">Pseudo d'Assassin/Donneur *</label>
+                <input type="text" id="pseudo" required minlength="3" maxlength="20">
+                <div class="error-msg" id="errorPseudo">Pseudo trop court (min 3 caractères)</div>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email Secret *</label>
+                <input type="email" id="email" required>
+                <div class="error-msg" id="errorEmail">Email invalide</div>
+            </div>
+
+            <div class="form-group">
+                <label for="motdepasse">Mot de passe *</label>
+                <input type="password" id="motdepasse" required minlength="6">
+                <div class="error-msg" id="errorMdp">Mot de passe trop court (min 6 caractères)</div>
+            </div>
+
+            <div class="role-select">
+                <button type="button" class="role-btn active" data-role="assassin" onclick="selectRole('assassin')">🗡️ Assassin</button>
+                <button type="button" class="role-btn" data-role="donateur" onclick="selectRole('donateur')">📜 Donneur</button>
+            </div>
+
+            <button type="submit" id="btnInscription">🗡️ S'Inscrire à la Guilde</button>
+        </form>
+
+        <div id="messageSuccess" class="success">
+            <h3>✅ Inscription Réussie !</h3>
+            <p id="pseudoConfirm"></p>
+            <p>Redirection vers la page d'accueil...</p>
+        </div>
+
+        <div class="back-link">
+            <a href="lui.html">← Retour Accueil</a>
+        </div>
+    </div>
+
+   <script>
+let selectedRole = 'assassin';
+
+function selectRole(role) {
+    selectedRole = role;
+    document.querySelectorAll('.role-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelector(`[data-role="${role}"]`).classList.add('active');
+}
+
+function validateForm() {
+    let isValid = true;
+    const inputs = {
+        pseudo: document.getElementById('pseudo'),
+        email: document.getElementById('email'),
+        mdp: document.getElementById('motdepasse')
+    };
+
+    // Reset erreurs
+    ['pseudo', 'email', 'mdp'].forEach(id => {
+        const input = inputs[id];
+        input.classList.remove('error');
+        document.getElementById(`error${id.charAt(0).toUpperCase() + id.slice(1)}`).style.display = 'none';
+    });
+
+    // Validation pseudo
+    if (inputs.pseudo.value.length < 3) {
+        inputs.pseudo.classList.add('error');
+        document.getElementById('errorPseudo').style.display = 'block';
+        isValid = false;
+    }
+
+    // Validation email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(inputs.email.value)) {
+        inputs.email.classList.add('error');
+        document.getElementById('errorEmail').style.display = 'block';
+        isValid = false;
+    }
+
+    // Validation mot de passe
+    if (inputs.mdp.value.length < 6) {
+        inputs.mdp.classList.add('error');
+        document.getElementById('errorMdp').style.display = 'block';
+        isValid = false;
+    }
+
+    return isValid;
+}
+
+document.getElementById('formInscription').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    if (validateForm()) {
+        const formData = {
+            pseudo: document.getElementById('pseudo').value,
+            email: document.getElementById('email').value,
+            role: selectedRole,
+            dateInscription: new Date().toLocaleDateString('fr-FR')
+        };
+
+        let membres = JSON.parse(localStorage.getItem('membresGuilde')) || [];
+        membres.push(formData);
+        localStorage.setItem('membresGuilde', JSON.stringify(membres));
+
+        document.getElementById('formInscription').style.display = 'none';
+        document.getElementById('pseudoConfirm').textContent = `Bienvenue ${formData.pseudo} (${formData.role}) !`;
+        document.getElementById('messageSuccess').style.display = 'block';
+
+        setTimeout(() => {
+            window.location.href = 'moi.html';
+        }, 3000);
+    }
+});
+</script>
+
+</body>
+</html>
